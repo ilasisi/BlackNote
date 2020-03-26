@@ -3,4 +3,8 @@
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#FF9800</color>
+    <color name="studyColor">#3F51B5</color>
+    <color name="familyAffairsColor">#4CAF50</color>
+    <color name="personalColor">#D60C0C</color>
+    <color name="otherColor">#9C27B0</color>
 </resources>

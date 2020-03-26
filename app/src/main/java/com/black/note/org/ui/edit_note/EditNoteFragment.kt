@@ -1,4 +1,4 @@
-package com.black.note.org.home
+package com.black.note.org.ui.edit_note
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -9,24 +9,24 @@ import android.view.ViewGroup
 
 import com.black.note.org.R
 
-class HomeFragment : Fragment() {
+class EditNoteFragment : Fragment() {
 
     companion object {
-        fun newInstance() = HomeFragment()
+        fun newInstance() = EditNoteFragment()
     }
 
-    private lateinit var viewModel: HomeViewModel
+    private lateinit var viewModel: EditNoteViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.home_fragment, container, false)
+        return inflater.inflate(R.layout.edit_note_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(EditNoteViewModel::class.java)
         // TODO: Use the ViewModel
     }
 

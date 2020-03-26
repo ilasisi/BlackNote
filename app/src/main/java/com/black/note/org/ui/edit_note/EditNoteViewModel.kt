@@ -1,4 +1,4 @@
-package com.black.note.org.edit_note
+package com.black.note.org.ui.edit_note
 
 import androidx.lifecycle.ViewModel
 
