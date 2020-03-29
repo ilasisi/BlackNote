@@ -21,8 +21,18 @@ internal class NoteRepository(application: Application) {
     }
 
     fun insertNote(note: Note) {
-        thread {
-            mNoteDao?.insertNote(note)
-        }
+        thread { mNoteDao?.insertNote(note) }
+    }
+
+    fun updateNote(note: Note) {
+        thread { mNoteDao?.updateNote(note) }
+    }
+
+    fun deleteNote(note: Note) {
+        thread { mNoteDao?.deleteNote(note) }
+    }
+
+    fun deleteAllNotes() {
+        thread { mNoteDao?.deleteAllNote() }
     }
 }

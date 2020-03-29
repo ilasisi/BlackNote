@@ -1,10 +1,7 @@
 package com.black.note.org.data
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface NoteDao {
@@ -14,6 +11,12 @@ interface NoteDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertNote(note: Note)
+
+    @Update(onConflict = OnConflictStrategy.IGNORE)
+    fun updateNote(note: Note)
+
+    @Delete
+    fun deleteNote(note: Note)
 
     @Query("DELETE FROM note_table")
     fun deleteAllNote()

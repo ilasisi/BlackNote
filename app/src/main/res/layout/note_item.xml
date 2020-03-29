@@ -1,49 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="5dp"
-    android:background="@android:color/white">
-    <View
-        android:id="@+id/v_left"
-        android:layout_width="5dp"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimaryDark"
-        android:layout_marginEnd="10dp"/>
-    <LinearLayout
+    android:layout_height="wrap_content">
+
+    <com.daimajia.swipe.SwipeLayout xmlns:swipe="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/swipe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginEnd="10dp">
-        <TextView
-            android:id="@+id/tv_note"
-            android:layout_width="wrap_content"
+        swipe:leftEdgeSwipeOffset="0dp"
+        swipe:rightEdgeSwipeOffset="0dp">
+
+        <LinearLayout
+            android:id="@+id/bottom1"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:gravity="end">
+
+            <ImageButton
+                android:id="@+id/delete_note"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/holo_red_dark"
+                android:src="@drawable/ic_delete_forever"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bottom2"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:gravity="start">
+
+            <ImageButton
+                android:id="@+id/edit_note"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/holo_green_dark"
+                android:src="@drawable/ic_edit"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_surfaceView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="This is a sample notghjgjghghgghghge"
-            android:textSize="20sp"
-            android:maxLines="1"
-            android:ellipsize="end"/>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/tv_category"
-                android:layout_width="wrap_content"
+            android:background="@android:color/white"
+            android:elevation="5dp">
+
+            <View
+                android:id="@+id/v_left"
+                android:layout_width="5dp"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimaryDark"
+                android:layout_marginEnd="10dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Category"
-                android:layout_alignParentStart="true"/>
-            <TextView
-                android:id="@+id/tv_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="12/10/2020"
-                android:layout_alignParentEnd="true"/>
-        </RelativeLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:background="@android:color/darker_gray"/>
-    </LinearLayout>
+                android:orientation="vertical"
+                android:layout_marginEnd="10dp"
+                android:padding="10dp">
+                <TextView
+                    android:id="@+id/tv_note"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="This is a sample notghjgjghghgghghge"
+                    android:textSize="20sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/tv_category"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Category"
+                        android:layout_alignParentStart="true"/>
+                    <TextView
+                        android:id="@+id/tv_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12/10/2020"
+                        android:layout_alignParentEnd="true"/>
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </com.daimajia.swipe.SwipeLayout>
 </LinearLayout>

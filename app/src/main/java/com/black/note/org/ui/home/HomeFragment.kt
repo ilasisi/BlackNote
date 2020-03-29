@@ -2,9 +2,6 @@ package com.black.note.org.ui.home
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
@@ -16,11 +13,14 @@ import com.black.note.org.adapter.NoteAdapter
 import androidx.lifecycle.ViewModelProvider
 import com.black.note.org.data.Note
 import android.content.Context
+import android.view.*
 import android.view.inputmethod.InputMethodManager
-
+import android.widget.Toast
+import com.black.note.org.ui.note_details.NoteDetailsFragment
+import com.black.note.org.viewmodel.NoteViewModel
 
 class HomeFragment : Fragment() {
-    private lateinit var mNoteViewModel: HomeViewModel
+    private lateinit var mNoteViewModel: NoteViewModel
     private lateinit var tvNoNote: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NoteAdapter
@@ -31,14 +31,17 @@ class HomeFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.home_fragment, container, false)
 
+        setHasOptionsMenu(true)
+
         hideKeyboard()
         initView(root)
         setupAdapter()
         loadViewModel()
+        onItemClick(root)
 
         val fabAddNote = root.findViewById<FloatingActionButton>(R.id.add_note)
         fabAddNote.setOnClickListener {view ->
-            view.findNavController().navigate(R.id.addNoteFragment)
+            view.findNavController().navigate(R.id.navigate_to_add_edit_note)
         }
 
         return root
@@ -50,21 +53,54 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupAdapter() {
-        adapter = NoteAdapter(requireContext())
+        adapter = NoteAdapter()
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun loadViewModel() {
-        mNoteViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        mNoteViewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
         mNoteViewModel.getAllNotes()?.observe(this,
-            Observer<List<Note>> { notes ->
-                if (notes.isNullOrEmpty()) {
+            Observer<List<Note>> {
+                if (it.isNullOrEmpty()) {
                     tvNoNote.visibility = View.VISIBLE
+                    recyclerView.visibility = View.GONE
                 } else {
-                    adapter.setNotes(notes)
+                    adapter.setNotes(it)
                 }
             })
+    }
+
+    private fun onItemClick(root: View) {
+        adapter.setOnItemClickListener(object : NoteAdapter.OnItemClickListener {
+
+            override fun onDeleteClick(position: Int) {
+                adapter.getNoteAt(position)?.let { mNoteViewModel.deleteNote(it) }
+            }
+
+            override fun onEditClick(note: Note?) {
+                val bundle = Bundle()
+                if (note != null) {
+                    bundle.putInt(NoteDetailsFragment.NOTE_ID, note.id)
+                    bundle.putString(NoteDetailsFragment.NOTE, note.note)
+                    bundle.putString(NoteDetailsFragment.NOTE_CATEGORY, note.category)
+                    bundle.putSerializable(NoteDetailsFragment.NOTE_UPDATE_TIME, note.updateAt)
+                }
+                root.findNavController().navigate(R.id.navigate_to_add_edit_note, bundle)
+            }
+
+            override fun onItemClick(note: Note?) {
+                val bundle = Bundle()
+                if (note != null) {
+                    bundle.putInt(NoteDetailsFragment.NOTE_ID, note.id)
+                    bundle.putString(NoteDetailsFragment.NOTE, note.note)
+                    bundle.putString(NoteDetailsFragment.NOTE_CATEGORY, note.category)
+                    bundle.putSerializable(NoteDetailsFragment.NOTE_UPDATE_TIME, note.updateAt)
+                }
+                root.findNavController().navigate(R.id.noteDetailsFragment, bundle)
+            }
+
+        })
     }
 
     private fun hideKeyboard() {
@@ -73,5 +109,16 @@ class HomeFragment : Fragment() {
         val v = requireActivity().currentFocus ?: return
 
         inputManager.hideSoftInputFromWindow(v.windowToken, 0)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_delete_all -> {
+                mNoteViewModel.deleteAllNotes()
+                Toast.makeText(requireContext(), "All notes deleted", Toast.LENGTH_LONG).show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
