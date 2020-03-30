@@ -1,4 +1,4 @@
-package com.black.note.org.data
+package com.black.note.org.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

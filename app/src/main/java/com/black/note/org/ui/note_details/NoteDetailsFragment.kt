@@ -3,65 +3,52 @@ package com.black.note.org.ui.note_details
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 
 import com.black.note.org.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.text.SimpleDateFormat
+import com.black.note.org.databinding.NoteDetailsFragmentBinding
+import com.black.note.org.utils.setDate
 import java.util.*
 
 class NoteDetailsFragment : Fragment() {
 
-    private var tvNote: TextView? = null
-    private var tvNoteCategory: TextView? = null
-    private var tvNoteDate: TextView? = null
-    private var fabEditNote: FloatingActionButton? = null
-
+    private lateinit var binding: NoteDetailsFragmentBinding
     private var noteId: Int? = -1
     private var note: String? = ""
     private var noteCategory: String? = ""
-    private var noteDate: String? = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.note_details_fragment, container, false)
-
+        binding = NoteDetailsFragmentBinding.inflate(inflater)
         setHasOptionsMenu(true)
-
-        initValues(root)
-        setUpCategoryColor()
-
-        fabEditNote?.setOnClickListener { view ->
-            navigateToEditFragment(view)
-        }
-
-        tvNote?.setOnClickListener { view ->
-            navigateToEditFragment(view)
-        }
-
-        return root
+        return binding.root
     }
 
-    private fun initValues(root: View) {
-        val format = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
+        initValues()
+        setUpCategoryColor()
+        binding.editNote.setOnClickListener {
+            navigateToEditFragment(it)
+        }
+
+        binding.tvNote.setOnClickListener {
+            navigateToEditFragment(it)
+        }
+    }
+
+    private fun initValues() {
         noteId = arguments?.getInt(NOTE_ID)
         note = arguments?.getString(NOTE)
         noteCategory = arguments?.getString(NOTE_CATEGORY)
-        noteDate = format.format(arguments?.getSerializable(NOTE_UPDATE_TIME))
 
-        tvNote = root.findViewById(R.id.tv_note)
-        tvNoteCategory = root.findViewById(R.id.tv_category)
-        tvNoteDate = root.findViewById(R.id.tv_date)
-        fabEditNote = root.findViewById(R.id.et_note)
-
-        tvNote?.text = note
-        tvNoteCategory?.text = noteCategory
-        tvNoteDate?.text = noteDate
+        binding.tvNote.text = note
+        binding.tvCategory.text = noteCategory
+        binding.tvDate.setDate(arguments?.getSerializable(NOTE_UPDATE_TIME) as Date?)
     }
 
     private fun navigateToEditFragment(root: View) {
@@ -76,17 +63,17 @@ class NoteDetailsFragment : Fragment() {
     private fun setUpCategoryColor() {
         when (noteCategory) {
             "Work" -> {
-                tvNoteCategory?.apply {
+                binding.tvCategory.apply {
                     setTextColor(ContextCompat.getColor(requireContext(), R.color.colorAccent))
                 }
             }
             "Study" -> {
-                tvNoteCategory?.apply {
+                binding.tvCategory.apply {
                     setTextColor(ContextCompat.getColor(requireContext(), R.color.studyColor))
                 }
             }
             "Family Affairs" -> {
-                tvNoteCategory?.apply {
+                binding.tvCategory.apply {
                     setTextColor(
                         ContextCompat.getColor(
                             requireContext(),
@@ -96,12 +83,12 @@ class NoteDetailsFragment : Fragment() {
                 }
             }
             "Personal" -> {
-                tvNoteCategory?.apply {
+                binding.tvCategory.apply {
                     setTextColor(ContextCompat.getColor(requireContext(), R.color.personalColor))
                 }
             }
             "Other" -> {
-                tvNoteCategory?.apply {
+                binding.tvCategory.apply {
                     setTextColor(ContextCompat.getColor(requireContext(), R.color.otherColor))
                 }
             }

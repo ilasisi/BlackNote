@@ -2,60 +2,53 @@ package com.black.note.org.ui.home
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.black.note.org.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.black.note.org.adapter.NoteAdapter
 import androidx.lifecycle.ViewModelProvider
-import com.black.note.org.data.Note
+import com.black.note.org.model.Note
 import android.content.Context
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import com.black.note.org.databinding.HomeFragmentBinding
 import com.black.note.org.ui.note_details.NoteDetailsFragment
 import com.black.note.org.viewmodel.NoteViewModel
 
 class HomeFragment : Fragment() {
     private lateinit var mNoteViewModel: NoteViewModel
-    private lateinit var tvNoNote: TextView
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: NoteAdapter
+    private lateinit var noteAdapter: NoteAdapter
+    private lateinit var binding: HomeFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val root = inflater.inflate(R.layout.home_fragment, container, false)
-
+        savedInstanceState: Bundle?): View? {
+        binding = HomeFragmentBinding.inflate(inflater)
         setHasOptionsMenu(true)
-
-        hideKeyboard()
-        initView(root)
-        setupAdapter()
-        loadViewModel()
-        onItemClick(root)
-
-        val fabAddNote = root.findViewById<FloatingActionButton>(R.id.add_note)
-        fabAddNote.setOnClickListener {view ->
-            view.findNavController().navigate(R.id.navigate_to_add_edit_note)
-        }
-
-        return root
+        return binding.root
     }
 
-    private fun initView(root: View) {
-        tvNoNote = root.findViewById(R.id.tv_no_note)
-        recyclerView = root.findViewById(R.id.rv_note)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        hideKeyboard()
+        setupAdapter()
+        loadViewModel()
+        onItemClick(binding.root)
+
+        binding.addNote.setOnClickListener {
+            it.findNavController().navigate(R.id.navigate_to_add_edit_note)
+        }
     }
 
     private fun setupAdapter() {
-        adapter = NoteAdapter()
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        noteAdapter = NoteAdapter()
+        binding.rvNote.apply {
+            adapter = noteAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
     }
 
     private fun loadViewModel() {
@@ -63,19 +56,19 @@ class HomeFragment : Fragment() {
         mNoteViewModel.getAllNotes()?.observe(this,
             Observer<List<Note>> {
                 if (it.isNullOrEmpty()) {
-                    tvNoNote.visibility = View.VISIBLE
-                    recyclerView.visibility = View.GONE
+                    binding.tvNoNote.visibility = View.VISIBLE
+                    binding.rvNote.visibility = View.GONE
                 } else {
-                    adapter.setNotes(it)
+                    noteAdapter.setNotes(it)
                 }
             })
     }
 
     private fun onItemClick(root: View) {
-        adapter.setOnItemClickListener(object : NoteAdapter.OnItemClickListener {
+        noteAdapter.setOnItemClickListener(object : NoteAdapter.OnItemClickListener {
 
             override fun onDeleteClick(position: Int) {
-                adapter.getNoteAt(position)?.let { mNoteViewModel.deleteNote(it) }
+                noteAdapter.getNoteAt(position)?.let { mNoteViewModel.deleteNote(it) }
             }
 
             override fun onEditClick(note: Note?) {

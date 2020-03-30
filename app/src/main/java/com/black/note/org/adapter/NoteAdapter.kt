@@ -2,126 +2,156 @@ package com.black.note.org.adapter
 
 import android.view.ViewGroup
 import android.view.LayoutInflater
-import android.view.View
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.black.note.org.R
-import com.black.note.org.data.Note
+import com.black.note.org.model.Note
+import com.black.note.org.databinding.NoteItemBinding
 import com.daimajia.swipe.SwipeLayout
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter
-import java.text.SimpleDateFormat
-import java.util.*
+import com.daimajia.swipe.implments.SwipeItemRecyclerMangerImpl
 
-class NoteAdapter : RecyclerSwipeAdapter<NoteAdapter.NoteViewHolder>() {
+internal class NoteAdapter : RecyclerSwipeAdapter<NoteAdapter.NoteViewHolder>() {
 
     private var mNotes: List<Note>? = null
     private var listener: OnItemClickListener? = null
 
-    inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    internal class NoteViewHolder
+    private constructor(private val binding: NoteItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        companion object {
+            @LayoutRes
+            val layout = R.layout.note_item
 
-        val swipeLayout: SwipeLayout =  itemView.findViewById(R.id.swipe)
-        val noteItemView: TextView = itemView.findViewById(R.id.tv_note)
-        val categoryItemView: TextView = itemView.findViewById(R.id.tv_category)
-        val dateItemView: TextView = itemView.findViewById(R.id.tv_date)
-        val leftView: View = itemView.findViewById(R.id.v_left)
-        private val deleteBtn: ImageButton = itemView.findViewById(R.id.delete_note)
-        private val editBtn: ImageButton = itemView.findViewById(R.id.edit_note)
-        private val llSurfaceView: LinearLayout = itemView.findViewById(R.id.ll_surfaceView)
+            fun from(parent: ViewGroup): NoteViewHolder {
+                val withDataBinding: NoteItemBinding = DataBindingUtil.inflate(
+                    LayoutInflater.from(parent.context),
+                    layout,
+                    parent,
+                    false
+                )
+                return NoteViewHolder(withDataBinding)
+            }
+        }
 
-        init {
-            llSurfaceView.setOnClickListener {
+        fun bind(note: Note?, listener: OnItemClickListener) {
+            val mItemManger = SwipeItemRecyclerMangerImpl(NoteAdapter())
+            binding.also {
+                it.note = note
+                it.executePendingBindings()
+            }
+
+            binding.swipe.showMode = SwipeLayout.ShowMode.PullOut
+            binding.swipe.isClickToClose = true
+            binding.swipe.addDrag(
+                SwipeLayout.DragEdge.Right,
+                binding.swipe.findViewById(R.id.bottom1)
+            )
+            binding.swipe.addDrag(
+                SwipeLayout.DragEdge.Left,
+                binding.swipe.findViewById(R.id.bottom2)
+            )
+            binding.swipe.addSwipeListener(object : SwipeLayout.SwipeListener {
+                override fun onOpen(layout: SwipeLayout?) {}
+
+                override fun onUpdate(layout: SwipeLayout?, leftOffset: Int, topOffset: Int) {}
+
+                override fun onStartOpen(layout: SwipeLayout?) {
+                    mItemManger.closeAllExcept(layout)
+                }
+
+                override fun onStartClose(layout: SwipeLayout?) {}
+
+                override fun onHandRelease(layout: SwipeLayout?, xvel: Float, yvel: Float) {}
+
+                override fun onClose(layout: SwipeLayout?) {}
+
+            })
+
+            binding.llSurfaceView.setOnClickListener {
                 val position = adapterPosition
-                if (position!= RecyclerView.NO_POSITION) {
-                    listener?.onItemClick(mNotes?.get(position))
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(note)
                 }
             }
 
-            deleteBtn.setOnClickListener {
+            binding.deleteNote.setOnClickListener {
                 val position = adapterPosition
-                if (position!= RecyclerView.NO_POSITION) {
-                    listener?.onDeleteClick(position)
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onDeleteClick(position)
                 }
             }
 
-            editBtn.setOnClickListener {
+            binding.editNote.setOnClickListener {
                 val position = adapterPosition
-                if (position!= RecyclerView.NO_POSITION) {
-                    listener?.onEditClick(mNotes?.get(position))
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onEditClick(note)
+                }
+            }
+
+            when {
+                binding.tvCategory.text == "Work" -> {
+                    binding.tvCategory.apply {
+                        setTextColor(ContextCompat.getColor(context, R.color.colorAccent))
+                    }
+                    binding.vLeft.apply {
+                        setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent))
+                    }
+                }
+
+                binding.tvCategory.text == "Study" -> {
+                    binding.tvCategory.apply {
+                        setTextColor(ContextCompat.getColor(context, R.color.studyColor))
+                    }
+                    binding.vLeft.apply {
+                        setBackgroundColor(ContextCompat.getColor(context, R.color.studyColor))
+                    }
+                }
+
+                binding.tvCategory.text == "Family Affairs" -> {
+                    binding.tvCategory.apply {
+                        setTextColor(ContextCompat.getColor(context, R.color.familyAffairsColor))
+                    }
+                    binding.vLeft.apply {
+                        setBackgroundColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.familyAffairsColor
+                            )
+                        )
+                    }
+                }
+
+                binding.tvCategory.text == "Personal" -> {
+                    binding.tvCategory.apply {
+                        setTextColor(ContextCompat.getColor(context, R.color.personalColor))
+                    }
+                    binding.vLeft.apply {
+                        setBackgroundColor(ContextCompat.getColor(context, R.color.personalColor))
+                    }
+                }
+
+                binding.tvCategory.text == "Other" -> {
+                    binding.tvCategory.apply {
+                        setTextColor(ContextCompat.getColor(context, R.color.otherColor))
+                    }
+                    binding.vLeft.apply {
+                        setBackgroundColor(ContextCompat.getColor(context, R.color.otherColor))
+                    }
                 }
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
-        val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.note_item, parent, false)
-        return NoteViewHolder(itemView)
+        return NoteViewHolder.from(parent)
     }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        if (mNotes != null) {
-            val current = mNotes!![position]
-            val format = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-            val date = format.format(current.updateAt)
-
-            holder.noteItemView.text = current.note
-            holder.categoryItemView.text = current.category
-            holder.dateItemView.text = date
-
-            holder.swipeLayout.showMode = SwipeLayout.ShowMode.LayDown
-            holder.swipeLayout.addDrag(SwipeLayout.DragEdge.Right, holder.swipeLayout.findViewById(R.id.bottom1))
-            holder.swipeLayout.addDrag(SwipeLayout.DragEdge.Left, holder.swipeLayout.findViewById(R.id.bottom2))
-
-            when {
-                current.category == "Work" -> {
-                    holder.categoryItemView.apply {
-                        setTextColor(ContextCompat.getColor(context ,R.color.colorAccent))
-                    }
-                    holder.leftView.apply {
-                        setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent))
-                    }
-                }
-
-                current.category == "Study" -> {
-                    holder.categoryItemView.apply {
-                        setTextColor(ContextCompat.getColor(context ,R.color.studyColor))
-                    }
-                    holder.leftView.apply {
-                        setBackgroundColor(ContextCompat.getColor(context, R.color.studyColor))
-                    }
-                }
-
-                current.category == "Family Affairs" -> {
-                    holder.categoryItemView.apply {
-                        setTextColor(ContextCompat.getColor(context ,R.color.familyAffairsColor))
-                    }
-                    holder.leftView.apply {
-                        setBackgroundColor(ContextCompat.getColor(context, R.color.familyAffairsColor))
-                    }
-                }
-
-                current.category == "Personal" -> {
-                    holder.categoryItemView.apply {
-                        setTextColor(ContextCompat.getColor(context ,R.color.personalColor))
-                    }
-                    holder.leftView.apply {
-                        setBackgroundColor(ContextCompat.getColor(context, R.color.personalColor))
-                    }
-                }
-
-                current.category == "Other" -> {
-                    holder.categoryItemView.apply {
-                        setTextColor(ContextCompat.getColor(context ,R.color.otherColor))
-                    }
-                    holder.leftView.apply {
-                        setBackgroundColor(ContextCompat.getColor(context, R.color.otherColor))
-                    }
-                }
-            }
-        }
+        listener?.let { holder.bind(mNotes?.get(position), it) }
+        mItemManger.bindView(holder.itemView, position)
     }
 
     fun getNoteAt(position: Int): Note? {
@@ -142,6 +172,7 @@ class NoteAdapter : RecyclerSwipeAdapter<NoteAdapter.NoteViewHolder>() {
         mNotes = notes
         notifyDataSetChanged()
     }
+
     override fun getItemCount(): Int {
         return if (mNotes != null)
             mNotes!!.size

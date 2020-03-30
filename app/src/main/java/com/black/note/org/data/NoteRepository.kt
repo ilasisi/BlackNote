@@ -2,6 +2,7 @@ package com.black.note.org.data
 
 import androidx.lifecycle.LiveData
 import android.app.Application
+import com.black.note.org.model.Note
 import kotlin.concurrent.thread
 
 

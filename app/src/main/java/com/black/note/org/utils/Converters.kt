@@ -1,4 +1,4 @@
-package com.black.note.org.data
+package com.black.note.org.utils
 
 import androidx.room.TypeConverter
 import java.util.*
@@ -6,7 +6,7 @@ import java.util.*
 class Converters {
     @TypeConverter
     fun fromTimestamp(value: Long): Date {
-        return  Date(value)
+        return Date(value)
     }
 
     @TypeConverter

@@ -9,7 +9,8 @@ import android.widget.*
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.black.note.org.MainActivity
-import com.black.note.org.data.Note
+import com.black.note.org.model.Note
+import com.black.note.org.databinding.AddEditNoteFragmentBinding
 import com.black.note.org.ui.note_details.NoteDetailsFragment
 import com.black.note.org.viewmodel.NoteViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,10 +20,8 @@ import java.util.*
 class AddEditNoteFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var mNoteViewModel: NoteViewModel
+    private lateinit var binding: AddEditNoteFragmentBinding
     private var spinnerAdapter: ArrayAdapter<CharSequence>? = null
-    private var mEditNoteView: EditText? = null
-    private var mSpinnerCategory: Spinner? = null
-    private var btnSave: Button? = null
     private var category = ""
     private var noteId: Int? = -1
     private var note: String? = ""
@@ -32,60 +31,55 @@ class AddEditNoteFragment : Fragment(), AdapterView.OnItemSelectedListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.add_edit_note_fragment, container, false)
-
+        binding = AddEditNoteFragmentBinding.inflate(inflater)
         setHasOptionsMenu(true)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         noteId = arguments?.getInt(NoteDetailsFragment.NOTE_ID)
         note = arguments?.getString(NoteDetailsFragment.NOTE)
         noteCategory = arguments?.getString(NoteDetailsFragment.NOTE_CATEGORY)
 
-        initView(root)
         setupCategorySpinner()
         ifEditNote()
 
-        btnSave?.setOnClickListener { view ->
-            saveNote(view)
+        binding.buttonSave.setOnClickListener {
+            saveNote(it)
         }
-
-        return root
     }
 
     private fun ifEditNote() {
         if (noteId == null) {
             (requireActivity() as MainActivity).toolbar.title = "Add Note"
         } else {
-            btnSave?.text = getString(R.string.update_note)
-            mEditNoteView?.setText(note)
+            binding.buttonSave.text = getString(R.string.update_note)
+            binding.etNote.setText(note)
             val spinnerPosition = spinnerAdapter?.getPosition(noteCategory)
             if (spinnerPosition != null) {
-                mSpinnerCategory?.setSelection(spinnerPosition)
+                binding.spCategory.setSelection(spinnerPosition)
             }
 
             (requireActivity() as MainActivity).toolbar.title = "Edit Note"
         }
     }
 
-    private fun initView(root: View) {
-        mEditNoteView = root.findViewById(R.id.et_note)
-        mSpinnerCategory = root.findViewById(R.id.sp_category)
-        btnSave = root.findViewById(R.id.button_save)
-    }
-
     private fun setupCategorySpinner() {
-        mSpinnerCategory?.onItemSelectedListener = this
+        binding.spCategory.onItemSelectedListener = this
         spinnerAdapter = ArrayAdapter.createFromResource(
             requireContext(),
             R.array.categories,
             android.R.layout.simple_spinner_item
         )
             spinnerAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            mSpinnerCategory?.adapter = spinnerAdapter
+        binding.spCategory.adapter = spinnerAdapter
     }
 
     private fun saveNote(view: View) {
         mNoteViewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
-        if (TextUtils.isEmpty(mEditNoteView?.text)) {
+        if (TextUtils.isEmpty(binding.etNote.text)) {
             Toast.makeText(
                 requireContext(),
                 "Note not saved",
@@ -93,7 +87,7 @@ class AddEditNoteFragment : Fragment(), AdapterView.OnItemSelectedListener {
             ).show()
         } else {
             val date = Date()
-            val etNote = mEditNoteView?.text.toString()
+            val etNote = binding.etNote.text.toString()
             if (noteId == null) {
                 val newNote = Note(etNote, category, date)
                 mNoteViewModel.insertNote(newNote)

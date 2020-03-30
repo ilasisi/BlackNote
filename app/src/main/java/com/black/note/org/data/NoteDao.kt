@@ -2,6 +2,7 @@ package com.black.note.org.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.black.note.org.model.Note
 
 @Dao
 interface NoteDao {

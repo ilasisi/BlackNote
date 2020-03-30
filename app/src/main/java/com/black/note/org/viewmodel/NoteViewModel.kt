@@ -3,7 +3,7 @@ package com.black.note.org.viewmodel
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import android.app.Application
-import com.black.note.org.data.Note
+import com.black.note.org.model.Note
 import com.black.note.org.data.NoteRepository
 
 
